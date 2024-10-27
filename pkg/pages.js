@@ -1,8 +1,6 @@
 let wasm;
 
-const cachedTextDecoder = (typeof TextDecoder !== 'undefined' ? new TextDecoder('utf-8', { ignoreBOM: true, fatal: true }) : { decode: () => { throw Error('TextDecoder not available') } } );
-
-if (typeof TextDecoder !== 'undefined') { cachedTextDecoder.decode(); };
+let WASM_VECTOR_LEN = 0;
 
 let cachedUint8ArrayMemory0 = null;
 
@@ -13,29 +11,58 @@ function getUint8ArrayMemory0() {
     return cachedUint8ArrayMemory0;
 }
 
-function getStringFromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return cachedTextDecoder.decode(getUint8ArrayMemory0().subarray(ptr, ptr + len));
+const cachedTextEncoder = (typeof TextEncoder !== 'undefined' ? new TextEncoder('utf-8') : { encode: () => { throw Error('TextEncoder not available') } } );
+
+const encodeString = (typeof cachedTextEncoder.encodeInto === 'function'
+    ? function (arg, view) {
+    return cachedTextEncoder.encodeInto(arg, view);
 }
+    : function (arg, view) {
+    const buf = cachedTextEncoder.encode(arg);
+    view.set(buf);
+    return {
+        read: arg.length,
+        written: buf.length
+    };
+});
 
-const heap = new Array(128).fill(undefined);
+function passStringToWasm0(arg, malloc, realloc) {
 
-heap.push(undefined, null, true, false);
+    if (realloc === undefined) {
+        const buf = cachedTextEncoder.encode(arg);
+        const ptr = malloc(buf.length, 1) >>> 0;
+        getUint8ArrayMemory0().subarray(ptr, ptr + buf.length).set(buf);
+        WASM_VECTOR_LEN = buf.length;
+        return ptr;
+    }
 
-function getObject(idx) { return heap[idx]; }
+    let len = arg.length;
+    let ptr = malloc(len, 1) >>> 0;
 
-let heap_next = heap.length;
+    const mem = getUint8ArrayMemory0();
 
-function dropObject(idx) {
-    if (idx < 132) return;
-    heap[idx] = heap_next;
-    heap_next = idx;
-}
+    let offset = 0;
 
-function takeObject(idx) {
-    const ret = getObject(idx);
-    dropObject(idx);
-    return ret;
+    for (; offset < len; offset++) {
+        const code = arg.charCodeAt(offset);
+        if (code > 0x7F) break;
+        mem[ptr + offset] = code;
+    }
+
+    if (offset !== len) {
+        if (offset !== 0) {
+            arg = arg.slice(offset);
+        }
+        ptr = realloc(ptr, len, len = offset + arg.length * 3, 1) >>> 0;
+        const view = getUint8ArrayMemory0().subarray(ptr + offset, ptr + len);
+        const ret = encodeString(arg, view);
+
+        offset += ret.written;
+        ptr = realloc(ptr, len, offset, 1) >>> 0;
+    }
+
+    WASM_VECTOR_LEN = offset;
+    return ptr;
 }
 
 let cachedDataViewMemory0 = null;
@@ -47,61 +74,37 @@ function getDataViewMemory0() {
     return cachedDataViewMemory0;
 }
 
-let WASM_VECTOR_LEN = 0;
+const cachedTextDecoder = (typeof TextDecoder !== 'undefined' ? new TextDecoder('utf-8', { ignoreBOM: true, fatal: true }) : { decode: () => { throw Error('TextDecoder not available') } } );
 
-function addHeapObject(obj) {
-    if (heap_next === heap.length) heap.push(heap.length + 1);
-    const idx = heap_next;
-    heap_next = heap[idx];
+if (typeof TextDecoder !== 'undefined') { cachedTextDecoder.decode(); };
 
-    heap[idx] = obj;
-    return idx;
-}
-
-function passArrayJsValueToWasm0(array, malloc) {
-    const ptr = malloc(array.length * 4, 4) >>> 0;
-    const mem = getDataViewMemory0();
-    for (let i = 0; i < array.length; i++) {
-        mem.setUint32(ptr + 4 * i, addHeapObject(array[i]), true);
-    }
-    WASM_VECTOR_LEN = array.length;
-    return ptr;
+function getStringFromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    return cachedTextDecoder.decode(getUint8ArrayMemory0().subarray(ptr, ptr + len));
 }
 /**
- * @param {number} x
- * @param {(Point)[]} points
- * @returns {number}
+ * @param {string} input_for_x
+ * @param {string} input_for_points
+ * @returns {string}
  */
-export function lagrange(x, points) {
-    const ptr0 = passArrayJsValueToWasm0(points, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.lagrange(x, ptr0, len0);
-    return ret;
-}
-
-const PointFinalization = (typeof FinalizationRegistry === 'undefined')
-    ? { register: () => {}, unregister: () => {} }
-    : new FinalizationRegistry(ptr => wasm.__wbg_point_free(ptr >>> 0, 1));
-
-export class Point {
-
-    static __unwrap(jsValue) {
-        if (!(jsValue instanceof Point)) {
-            return 0;
-        }
-        return jsValue.__destroy_into_raw();
-    }
-
-    __destroy_into_raw() {
-        const ptr = this.__wbg_ptr;
-        this.__wbg_ptr = 0;
-        PointFinalization.unregister(this);
-        return ptr;
-    }
-
-    free() {
-        const ptr = this.__destroy_into_raw();
-        wasm.__wbg_point_free(ptr, 0);
+export function lagrange(input_for_x, input_for_points) {
+    let deferred3_0;
+    let deferred3_1;
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passStringToWasm0(input_for_x, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(input_for_points, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.lagrange(retptr, ptr0, len0, ptr1, len1);
+        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+        deferred3_0 = r0;
+        deferred3_1 = r1;
+        return getStringFromWasm0(r0, r1);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+        wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
     }
 }
 
@@ -139,13 +142,6 @@ async function __wbg_load(module, imports) {
 function __wbg_get_imports() {
     const imports = {};
     imports.wbg = {};
-    imports.wbg.__wbg_point_unwrap = function(arg0) {
-        const ret = Point.__unwrap(takeObject(arg0));
-        return ret;
-    };
-    imports.wbg.__wbindgen_throw = function(arg0, arg1) {
-        throw new Error(getStringFromWasm0(arg0, arg1));
-    };
 
     return imports;
 }

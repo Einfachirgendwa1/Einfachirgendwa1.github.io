@@ -20,7 +20,7 @@
     <p id="result">Ergebnis: <span id="output"></span></p>
 
     <script type="module">
-        import init, { lagrange, Point } from './pkg/pages.js';
+        import init, { lagrange } from './pkg/pages.js';
 
         async function run() {
             await init();
@@ -31,15 +31,11 @@
             form.addEventListener('submit', event => {
                 event.preventDefault();
 
-                const x = parseFloat(document.getElementById('x-value').value);
+                const x = document.getElementById('x-value').value;
                 const pointsInput = document.getElementById('points').value;
-                const pointsArray = pointsInput.split(';').map(p => {
-                    const [x, y] = p.split(',').map(Number);
-                    return new Point(x, y);
-                });
 
-                const result = lagrange(x, pointsArray);
-                output.textContent = result.toFixed(4);
+                const result = lagrange(x, pointsInput);
+                output.textContent = result;
             });
         }
 
