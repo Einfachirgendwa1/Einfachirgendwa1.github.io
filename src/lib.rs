@@ -1,8 +1,12 @@
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
 pub struct Point {
     x: f64,
     y: f64,
 }
 
+#[wasm_bindgen]
 pub fn lagrange(x: f64, points: Vec<Point>) -> f64 {
     points
         .iter()

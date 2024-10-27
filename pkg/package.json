@@ -11,7 +11,8 @@
   "files": [
     "pages_bg.wasm",
     "pages.js",
-    "pages.d.ts"
+    "pages.d.ts",
+    "LICENSE.md"
   ],
   "main": "pages.js",
   "types": "pages.d.ts",

@@ -1,10 +1,22 @@
 /* tslint:disable */
 /* eslint-disable */
+/**
+ * @param {number} x
+ * @param {(Point)[]} points
+ * @returns {number}
+ */
+export function lagrange(x: number, points: (Point)[]): number;
+export class Point {
+  free(): void;
+}
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly __wbg_point_free: (a: number, b: number) => void;
+  readonly lagrange: (a: number, b: number, c: number) => number;
+  readonly __wbindgen_malloc: (a: number, b: number) => number;
 }
 
 export type SyncInitInput = BufferSource | WebAssembly.Module;
