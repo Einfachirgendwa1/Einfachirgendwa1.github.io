@@ -34,7 +34,14 @@ pub fn lagrange(input_for_x: &str, input_for_points: &str) -> String {
         }
     }
 
-    do_lagrange(x, points).to_string()
+    format!(
+        "f({x}) = {lagrange}\n\nwhere:\n{points}",
+        lagrange = do_lagrange(x, &points).to_string(),
+        points = points
+            .iter()
+            .map(|point| format!("\tf({x}) = {y}\n", x = point.x, y = point.y))
+            .collect::<String>()
+    )
 }
 
 pub struct Point {
@@ -42,7 +49,7 @@ pub struct Point {
     y: f64,
 }
 
-fn do_lagrange(x: f64, points: Vec<Point>) -> f64 {
+fn do_lagrange(x: f64, points: &Vec<Point>) -> f64 {
     points
         .iter()
         .map(|point| {
