@@ -4,21 +4,29 @@ use wasm_bindgen::prelude::*;
 pub fn lagrange(input_for_x: &str, input_for_points: &str) -> String {
     let mut points = Vec::new();
 
-    let Ok(x) = input_for_x.parse() else {
-        return format!("Failed to parse the value for x: `{input_for_x}`");
+    if input_for_x.is_empty() || input_for_points.is_empty() {
+        return "".to_string();
+    }
+
+    let x = match input_for_x.parse() {
+        Ok(value) => value,
+        Err(err) => return format!("Failed to parse the value for x: `{input_for_x}`: `{err}`"),
     };
 
     for (this, e) in input_for_points
         .split(';')
+        .filter(|this| !this.is_empty())
         .map(|this| (this, this.split_once(',')))
     {
         match e {
             Some((x, y)) => {
-                let Ok(x) = x.parse() else {
-                    return format!("Failed to parse this number: `{x}`.");
+                let x = match x.parse() {
+                    Ok(value) => value,
+                    Err(err) => return format!("Failed to parse this number: `{x}`: `{err}`"),
                 };
-                let Ok(y) = y.parse() else {
-                    return format!("Failed to parse this number: `{y}`.");
+                let y = match y.parse() {
+                    Ok(value) => value,
+                    Err(err) => return format!("Failed to parse this number: `{y}`: `{err}`"),
                 };
                 points.push(Point { x, y });
             }
