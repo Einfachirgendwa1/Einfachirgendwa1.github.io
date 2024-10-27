@@ -10,6 +10,7 @@ async function recalculate() {
 
 async function run() {
   await init();
+  await recalculate();
 
   x.addEventListener("input", recalculate);
   points.addEventListener("input", recalculate);
