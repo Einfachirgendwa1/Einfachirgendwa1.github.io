@@ -1,4 +1,16 @@
+use std::panic;
+
 use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
+pub fn initialize_new() {
+    panic::set_hook(Box::new(console_error_panic_hook::hook));
+}
+
+#[wasm_bindgen]
+pub fn readme_markdown() -> String {
+    include_str!("../README.md").to_string()
+}
 
 #[wasm_bindgen]
 pub fn lagrange(input_for_x: &str, input_for_points: &str) -> String {
@@ -35,8 +47,9 @@ pub fn lagrange(input_for_x: &str, input_for_points: &str) -> String {
     }
 
     format!(
-        "f({x}) = {lagrange}\n\nwhere:\n{points}",
-        lagrange = do_lagrange(x, &points).to_string(),
+        "f({x}) = {lagrange_value_for_x}\nf(x) = {lagrange_formula}\n\nwhere:\n{points}",
+        lagrange_value_for_x = do_lagrange(x, &points).to_string(),
+        lagrange_formula = lagrange_formula(&points),
         points = points
             .iter()
             .map(|point| format!("\tf({x}) = {y}\n", x = point.x, y = point.y))
@@ -61,4 +74,30 @@ fn do_lagrange(x: f64, points: &Vec<Point>) -> f64 {
                     .product::<f64>()
         })
         .sum()
+}
+
+fn lagrange_formula(points: &Vec<Point>) -> String {
+    let mut output = String::new();
+    for point in points {
+        output.push_str(&format!("{} * ", point.y));
+
+        output.push_str(
+            points
+                .iter()
+                .filter(|inner_point| inner_point.x != point.x)
+                .map(|inner_point| {
+                    format!(
+                        "((x - {inner_x}) / ({point_x} - {inner_x}))",
+                        inner_x = inner_point.x,
+                        point_x = point.x
+                    )
+                })
+                .collect::<Vec<String>>()
+                .join(" + ")
+                .as_str(),
+        );
+        todo!()
+    }
+
+    output
 }

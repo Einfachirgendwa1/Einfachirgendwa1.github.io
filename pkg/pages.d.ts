@@ -1,5 +1,10 @@
 /* tslint:disable */
 /* eslint-disable */
+export function initialize_new(): void;
+/**
+ * @returns {string}
+ */
+export function readme_markdown(): string;
 /**
  * @param {string} input_for_x
  * @param {string} input_for_points
@@ -11,11 +16,13 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly readme_markdown: (a: number) => void;
   readonly lagrange: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly initialize_new: () => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
+  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
-  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
 }
 
 export type SyncInitInput = BufferSource | WebAssembly.Module;
