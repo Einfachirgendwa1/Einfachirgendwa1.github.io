@@ -76,28 +76,29 @@ fn do_lagrange(x: f64, points: &Vec<Point>) -> f64 {
         .sum()
 }
 
-fn lagrange_formula(points: &Vec<Point>) -> String {
-    let mut output = String::new();
-    for point in points {
-        output.push_str(&format!("{} * ", point.y));
-
-        output.push_str(
-            points
-                .iter()
-                .filter(|inner_point| inner_point.x != point.x)
-                .map(|inner_point| {
-                    format!(
-                        "((x - {inner_x}) / ({point_x} - {inner_x}))",
-                        inner_x = inner_point.x,
-                        point_x = point.x
-                    )
-                })
-                .collect::<Vec<String>>()
-                .join(" + ")
-                .as_str(),
-        );
-        todo!()
-    }
-
-    output
+fn lagrange_formula(_points: &Vec<Point>) -> String {
+    "Not yet implemented".to_string()
+    // let mut output = String::new();
+    // for point in points {
+    //     output.push_str(&format!("{} * ", point.y));
+    //
+    //     output.push_str(
+    //         points
+    //             .iter()
+    //             .filter(|inner_point| inner_point.x != point.x)
+    //             .map(|inner_point| {
+    //                 format!(
+    //                     "((x - {inner_x}) / ({point_x} - {inner_x}))",
+    //                     inner_x = inner_point.x,
+    //                     point_x = point.x
+    //                 )
+    //             })
+    //             .collect::<Vec<String>>()
+    //             .join(" + ")
+    //             .as_str(),
+    //     );
+    //     todo!()
+    // }
+    //
+    // output
 }
